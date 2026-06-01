@@ -1,0 +1,28 @@
+1.	找出商品名稱中含有'office’字樣(大小寫不限)的商品 (字串比較)
+SELECT * FROM EC.PRODUCT
+WHERE LOWER(PROD_NAME) LIKE '%office%';
+總共有92筆資料
+
+2.	列出已經退款完成的訂單 (IS NULL的運用)
+SELECT * FROM EC.SALES_ORDER
+WHERE PAY_RTN_DTTM IS  NOT null;
+總共有290筆資料
+
+3.	查詢是否有訂價小於售價的商品 (數字比較)
+SELECT * FROM EC.PRODUCT
+WHERE SELL_PRICE > LIST_PRICE;
+
+4.	找出“非一般消費者”的客戶代碼跟姓名，並過濾出客戶姓名介於15到20間，查詢結果依照客戶姓名排序 (字串函數&比較&排序)
+SELECT * FROM EC.CUSTOMER
+WHERE CUST_SEG != 'C'
+AND LENGTH(CUST_NAME) BETWEEN 15 AND 20
+ORDER BY CUST_NAME ;
+
+5.	找出20241230~20241231兩天的訂單，並依照訂單時間排序 (日期函數&比較)
+SELECT * FROM EC.SALES_ORDER
+WHERE ORDER_DTTM BETWEEN 
+TO_DATE('2024-12-30 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND 
+TO_DATE('2024-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+ORDER BY ORDER_DTTM ;
+
+
