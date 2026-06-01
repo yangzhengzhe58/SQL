@@ -1,0 +1,94 @@
+1.找出近半年未曾購物的客戶代碼
+近半年的算法：今天 ~ 6個月前  or 今天 – 180天
+半年前的當天須從00:00:00開始計算(不可”破天”)
+請試著運用MINUS (提示：全部客戶 - 近半年曾購買客戶)
+輸出欄位：客戶代碼
+排序欄位：客戶代碼
+SELECT CUST_ID 
+FROM EC.CUSTOMER
+MINUS
+SELECT DISTINCT CUST_ID 
+FROM EC.SALES_ORDER 
+WHERE ORDER_DTTM >= TRUNC(SYSDATE - 180)
+ORDER BY 1;
+
+2.找出客戶的訂單與明細(運用JOIN)
+請探索訂單周邊Tables的關聯(參考作業#1)，運用JOIN將串出一個明細大表
+輸出欄位 – 客戶分類/客戶代碼/客戶姓名/訂單日期/訂單明細編號/商品名稱/銷售單價/訂購數量/商品成本/利潤(不考慮折扣)
+排序欄位 – 客戶代碼/訂單日期/訂單明細編號
+篩選條件 – 運送至台灣的訂單
+SELECT
+ol.ORDER_LINE_ID,
+ol.SELL_PRICE,
+ol.ORDER_QTY,
+pr.PROD_NAME ,
+pr.PROD_COST ,
+o.ORDER_DTTM,
+o.CUST_ID,
+c.CUST_NAME,
+c.CUST_SEG,
+(ol.SELL_PRICE - pr.PROD_COST) * ol.ORDER_QTY AS PROFIT
+FROM EC.SALES_ORDER_LINE ol
+LEFT JOIN EC.SALES_ORDER o
+ON ol.ORDER_ID = o.ORDER_ID
+LEFT JOIN EC.CUSTOMER c
+ON o.CUST_ID = c.CUST_ID
+LEFT JOIN EC.PRODUCT pr
+ON ol.PROD_ID = pr.PROD_ID
+WHERE o.SHPMT_CNTRY_ID = '11'
+ORDER BY o.CUST_ID, o.ORDER_DTTM, ol.ORDER_LINE_ID;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
