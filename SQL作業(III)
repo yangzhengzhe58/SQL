@@ -1,0 +1,26 @@
+1.找出各個國家下的總銷售金額前三名之商品 (Join & Aggregate & Rank的運用)
+欄位 – 國家代碼 & 名稱 / 商品代碼 & 名稱 / 總銷售金額 & 排名
+排序 – 國家代碼+ 排名
+提示：拆解問題一段一段撰寫   RAW(Join) -> Aggregate(SUM) -> Rank -> 取前三名
+WITH CountryProductSales AS (
+    SELECT 
+        co.CNTRY_ID,
+        co.CNTRY_NAME,
+        pr.PROD_ID,
+        pr.PROD_NAME,
+        SUM(pr.SELL_PRICE) AS Total_Sales,#選擇需要的欄位
+        RANK() OVER (
+            PARTITION BY co.CNTRY_ID 
+            ORDER BY SUM(pr.SELL_PRICE) DESC
+        ) AS Sales_Rank#以co.CNTRY_ID為分組，並計算各組組內sell_price的排名，最後命名成Sales_Rank
+    FROM EC.PRODUCT pr
+    JOIN EC.SALES_ORDER_LINE sol ON pr.PROD_ID = sol.PROD_ID
+    INNER JOIN EC.SALES_ORDER so ON sol.ORDER_ID = so.ORDER_ID 
+    INNER JOIN EC.REF_COUNTRY co ON so.SHPMT_CNTRY_ID = co.CNTRY_ID #選擇需要表格進行合併
+    GROUP BY 
+        co.CNTRY_ID, co.CNTRY_NAME, pr.PROD_ID, pr.PROD_NAME
+)#以這些欄位進行分組
+SELECT *
+FROM CountryProductSales#從虛擬表格抓出所有欄位
+WHERE Sales_Rank <= 3#滿足所需的限制式
+ORDER BY CNTRY_ID ASC, Sales_Rank ASC;#排序從小到大
